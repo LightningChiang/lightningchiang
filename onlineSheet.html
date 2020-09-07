@@ -1,0 +1,232 @@
+<head>
+	<meta charset="UTF-8">
+	<title>FS LAB</title>
+	<link href="images/logo.ico" rel="icon" type="image/x-ico">
+	<script src="js/library/list.js"></script>
+	<script src="js/data/data.js"></script>
+	<script src="https://cdn.bootcss.com/crypto-js/3.1.9-1/crypto-js.min.js"></script>
+	<style type="text/css">
+	::-webkit-scrollbar {
+		width: 1px;
+	}
+	/* Track */
+	::-webkit-scrollbar-track {
+		background: #f1f1f1; 
+	}
+	
+	/* Handle */
+	::-webkit-scrollbar-thumb {
+		background: #888; 
+	}
+
+	/* Handle on hover */
+	::-webkit-scrollbar-thumb:hover {
+		background: #555; 
+	}
+	table {
+		width: 100%;
+		text-align: center;
+		border-spacing: 0;/**设置相邻单元格的边框间的距离**/
+		border-collapse: collapse;/**边框会合并为一个单一的边框**/
+		color:#5a5a5a;
+		table-layout: fixed;/**固定table表格**/
+	}
+	th {
+		border-bottom: 1px solid #ccc;
+		height: 100px;
+		
+	}
+	.pagination li {
+		display:inline-block;
+		padding:5px;
+	}
+	h1 {
+		text-align: center;
+	}
+	h1, .list {
+		font-family: 'Sorts Mill Goudy', serif;
+	}
+	tr{
+		border-bottom: 1px solid #ccc;
+	}
+	td {
+		padding: 10px;
+		white-space: nowrap;
+		/*#width:*/ 
+		border: 1px solid #ccc;
+		overflow: auto;/**溢出隐藏**/
+		white-space: nowrap;/**不换行**/
+		/*text-overflow: ellipsis;/**溢出不可见部分使用...代替**/
+	}
+	input {
+		border: solid 1px #ccc;
+		border-radius: 5px;
+		padding: 7px 14px;
+		margin-bottom: 10px
+	}
+	input:focus {
+		outline: none;
+		border-color: #aaa;
+	}
+	.sort, button {
+		padding: 8px 30px;
+		border: none;
+		display: inline-block;
+		color: black;
+		background-color: transparent;
+		text-decoration: none;
+		height: 30px;
+		font-size: 0.9em;
+		font-weight: bold;
+	}
+	.sort:hover {
+		text-decoration: none;
+	}
+	.sort:focus {
+		outline: none;
+	}
+	.sort:after {
+		display: inline-block;
+		width: 0;
+		height: 0;
+		border-left: 5px solid transparent;
+		border-right: 5px solid transparent;
+		border-bottom: 5px solid transparent;
+		content: "";
+		position: relative;
+		top: -10px;
+		right: -5px;
+	}
+	.sort.asc:after {
+		width: 0;
+		height: 0;
+		border-left: 5px solid transparent;
+		border-right: 5px solid transparent;
+		border-top: 5px solid #000;
+		content: "";
+		position: relative;
+		top: 4px;
+		right: -5px;
+	}
+	.sort.desc:after {
+		width: 0;
+		height: 0;
+		border-left: 5px solid transparent;
+		border-right: 5px solid transparent;
+		border-bottom: 5px solid #000;
+		content: "";
+		position: relative;
+		top: -4px;
+		right: -5px;
+	}
+	/* Let's push the search field to the far right of the table header. */
+	input.search {
+		text-align: center;
+		margin:auto;
+		position: relative;
+	}
+	</style>
+</head>
+<body>
+	<!--<div id="oldDiv" class="here" style="display: block">
+		<H3>FSLAB data search</H3>
+		<p>our code is open source, but the data is balabala if you want to please balbala</p>
+		<button type="button" onclick="newDivHere()">replace</button>
+		<div id="newDiv" class="here" style="display: none" >
+		</div>
+	</div>-->
+	
+	<link href='https://fonts.googleapis.com/css?family=Sorts+Mill+Goudy:400,400italic' rel='stylesheet' type='text/css'>
+	
+	<h1>FSLAB DATA SEARCH</h1>
+
+	<div id="hacker-list">
+		<center><input class="search" placeholder="Search" /></center>
+		</br>
+	<table>
+		<thead>
+		<th>
+		<button class="sort" data-sort="Index">Index</br></button>
+		</th>
+		<th>
+		<button class="sort" data-sort="Author">Author</br></button>
+		</th>
+		<th>
+		<button class="sort" data-sort="Date">Date</br></button>
+		</th>
+		<th>
+		<button class="sort" data-sort="Construct Name">Construct Name</br></button>
+		</th>
+		<th>
+		<button class="sort" data-sort="Backbone Plasmid">Backbone Plasmid</br></button>
+		</th>
+		<th>
+		<button class="sort" data-sort="Antibiotic">Antibiotic</br></button>
+		</th>
+		<th>
+		<button class="sort" data-sort="DNA Sequence">DNA Sequence</br></button>
+		</th>
+		<th>
+		<button class="sort" data-sort="Protein Seqeuence">Protein Seqeuence</br></button>
+		</th>
+		<th>
+		<button class="sort" data-sort="Notes">Notes</br></button>
+		</th>
+		</thead>
+		<!-- IMPORTANT, class="list" have to be at tbody -->
+		<tbody class="list">
+		</tbody>
+	</table>
+	<ul class="pagination">
+	</ul>
+	</div>
+	
+	
+</body>
+
+	<script type="text/javascript">
+
+		let passBall = sessionStorage.getItem('password');
+		sessionStorage.clear();
+		var hash = CryptoJS.SHA256(passBall).toString(CryptoJS.enc.Hex).slice(0,16);
+
+		const iv = CryptoJS.enc.Utf8.parse('a8d9672272f606b9');
+		const key = CryptoJS.enc.Utf8.parse(hash);
+
+		function Decrypt(word) {
+			let encryptedHexStr = CryptoJS.enc.Hex.parse(word);
+			let srcs = CryptoJS.enc.Base64.stringify(encryptedHexStr);
+			let decrypt = CryptoJS.AES.decrypt(srcs, key, { iv: iv, mode: CryptoJS.mode.CBC, padding: CryptoJS.pad.Pkcs7 });
+			let decryptedStr = decrypt.toString(CryptoJS.enc.Utf8);
+			return decryptedStr.toString();
+		}
+	
+		var result = JSON.parse(Decrypt(values_FSLAB));
+
+		var options = {
+			valueNames: [ 'Index', 'Author', 
+			'Date', "Construct Name", 
+			"Backbone Plasmid", "Antibiotic", 
+			"DNA Sequence", "Protein Seqeuence", 
+			"Notes"],
+
+			item:
+			'<tr> \
+			<td class="Index"></td> \
+			<td class="Author"></td> \
+			<td class="Date"></td> \
+			<td class="Construct Name"></td> \
+			<td class="Backbone Plasmid"></td> \
+			<td class="Antibiotic"></td> \
+			<td class="DNA Sequence"></td> \
+			<td class="Protein Seqeuence"></td> \
+			<td class="Notes"></td> \
+			</tr>'
+		};
+		var hackerList = new List('hacker-list', options, result.slice(1,));
+		
+
+
+		
+	
+	</script>
