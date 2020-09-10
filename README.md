@@ -1,5 +1,5 @@
 ### About the Project
-This project is developing a website for online lab inventories sharing. The entire coding is open-source. However, the data published on this website is licensed, you must contact us to get access before use.
+This project is developing a website for online lab inventories sharing. The entire coding is open-source. However, the data published on this website is licensed, you must contact us(kefsun@ust.hk) to get access before use.
 
 ### License
 Distributed under the MIT License. 
